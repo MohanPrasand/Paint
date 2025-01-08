@@ -332,7 +332,7 @@ int solidfill(int x,int y){
 
 int drawShape(int x, int y, void *bitmap){
     int x1,y1;
-    static int i;
+    int nx1,nx2,ny1,ny2;
     setcolor(color);
     setlinestyle(SOLID_LINE,0,2);
     if(tool==10){
@@ -350,10 +350,25 @@ int drawShape(int x, int y, void *bitmap){
                     ellipse((x+x1)/2,(y+y1)/2,0,360,abs((x+x1)/2-x1),abs((y+y1)/2-y1));
                     break;
                 case 1:
+                    if(x<100 || x1<100) continue;
                     line(x,y,x1,y1);
                     break;
                 case 4:
-                    rectangle(x,y,x1,y1);
+                    nx1=x;
+                    nx2=x1;
+                    ny1=y;
+                    ny2=y1;
+                    if(nx1>nx2){
+                        x1=nx1;
+                        nx1=nx2;
+                        nx2=x1;
+                    }
+                    if(ny1>ny2){
+                        y1=ny1;
+                        ny1=ny2;
+                        ny2=y1;
+                    }
+                    rectangle(nx1,ny1,nx2,ny2);
                     break;
                 case 3:
                     if(x1-12<=100) continue;
