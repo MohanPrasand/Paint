@@ -282,20 +282,32 @@ int color = BLACK;
 int tool = -1;
 
 int solidfill(int x,int y){
-    int tcolor=getpixel(x,y);
+    unsigned char* bmp = (unsigned char*)*bmpp;
+    bmp+=24;
+    x-=100;
+    unsigned int tcolor=COLOR(bmp[(y*1081+x)*4],bmp[(y*1081+x)*4+1],bmp[(y*1081+x)*4+2]);
     if(tcolor == color) return 0;
     int sz=2,i=0,len=10000;
-    int q[len];
+    int *q=(int*)malloc(sizeof(int)*len);
+    
+
+        
+
+
     q[0]=x;
     q[1]=y;
 
-    while((i-sz)!=0){
+    sz=2,i=0;
+    while(abs(i-sz)>=2){
         x=q[i++];
         i%=len;
         y=q[i++];
         i%=len;
-        if(x<=100 || x>=1180 || y<0 || y>=720 || getpixel(x,y)!=tcolor) continue;
-        putpixel(x,y,color);
+        if(x<0 || x>=1080 || y<0 || y>=720 || COLOR(bmp[(y*1081+x)*4],bmp[(y*1081+x)*4+1],bmp[(y*1081+x)*4+2])!=tcolor) continue;
+        bmp[(y*1081+x)*4]=(color>>16)&0xff;
+        bmp[(y*1081+x)*4+1]=(color>>8)&0xff;
+        bmp[(y*1081+x)*4+2]=(color)&0xff;
+        
 
         q[sz++]=x+1;
         sz%=len;
@@ -314,7 +326,7 @@ int solidfill(int x,int y){
         q[sz++]=y-1;
         sz%=len;
     }
-
+    putimage(100,0,*bmpp,COPY_PUT);
     return 0;
 }
 
@@ -345,7 +357,7 @@ int drawShape(int x, int y, void *bitmap){
                     break;
                 case 3:
                     if(x1-12<=100) continue;
-                    setlinestyle(SOLID_LINE,0,20);
+                    setlinestyle(SOLID_LINE,0,10);
                     setcolor(WHITE);
                 case 8:
                     line(x,y,x1,y1);
@@ -485,7 +497,7 @@ int selectimg(int i){
     return 0;
 }
 
-int numbuttons=14;
+int numbuttons=15;
 button buttons[]={
     (button){5,10,40,40,selecttool,4,1,{(shape){'r',0,10,15,30,30,RGB(0,0,0)}}},
     (button){55,10,40,40,selecttool,0,1,{(shape){'c',0,75,30,17,17,RGB(0,0,0)}}},
@@ -499,6 +511,7 @@ button buttons[]={
     (button){55,220,40,40,selectcolor,RGB(159,0,177),1,{(shape){'r',1,55,220,40,40,RGB(0,0,0),RGB(159,0,177)}}},
     (button){5,275,40,40,selectcolor,RGB(255,255,255),1,{(shape){'r',1,5,275,40,40,RGB(0,0,0),RGB(255,255,255)}}},
     (button){55,275,40,40,selectcolor,RGB(0,0,0),1,{(shape){'r',1,55,275,40,40,RGB(0,0,0),RGB(0,0,0)}}},
+    (button){5,330,40,40,selectcolor,RGB(225,225,0),1,{(shape){'r',1,5,330,40,40,RGB(0,0,0),RGB(255,255,0)}}},
     (button){5,400,40,40,imgselector,1,4,{(shape){'r',0,23,403,4,20,RGB(0,0,0),RGB(0,0,0)},(shape){'l',0,15,423,35,423,RGB(0,0,0),RGB(0,0,0)},(shape){'l',0,15,423,25,435,RGB(0,0,0),RGB(0,0,0)},(shape){'l',0,25,435,35,423,RGB(0,0,0),RGB(0,0,0)}}},
     (button){55,400,40,40,writeimage,1,4,{(shape){'r',0,73,415,4,20,RGB(0,0,0),RGB(0,0,0)},(shape){'l',0,65,415,85,415,RGB(0,0,0),RGB(0,0,0)},(shape){'l',0,65,415,75,405,RGB(0,0,0),RGB(0,0,0)},(shape){'l',0,75,405,85,415,RGB(0,0,0),RGB(0,0,0)}}}
 };
